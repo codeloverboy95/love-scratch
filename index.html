@@ -1,39 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seductive Secrets - Pure Passion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ভালোবাসার ছোঁয়া - Seductive Scratch Secrets</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * {
             user-select: none;
             -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            box-sizing: border-box;
         }
 
-        body {
-            touch-action: none;
-            background: radial-gradient(circle at center, #2e021a 0%, #0d0007 100%);
-            color: #ffe4e6;
-            font-family: system-ui, -apple-system, sans-serif;
+        html, body {
+            height: 100%;
+            height: 100dvh;
+            margin: 0;
+            padding: 0;
             overflow: hidden;
+            background: radial-gradient(circle at center, #3b071e 0%, #0f0208 100%);
+            color: #ffe4e6;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            touch-action: none;
         }
 
-        @keyframes eroticGlow {
-            0%, 100% { box-shadow: 0 0 25px rgba(225, 29, 72, 0.4), inset 0 0 15px rgba(244, 63, 94, 0.2); }
-            50% { box-shadow: 0 0 45px rgba(244, 63, 94, 0.7), inset 0 0 25px rgba(225, 29, 72, 0.4); }
+        @keyframes romanticGlow {
+            0%, 100% { 
+                box-shadow: 0 0 25px rgba(244, 63, 94, 0.4), inset 0 0 15px rgba(225, 29, 72, 0.2); 
+            }
+            50% { 
+                box-shadow: 0 0 45px rgba(244, 63, 94, 0.8), inset 0 0 25px rgba(225, 29, 72, 0.5); 
+            }
         }
 
-        .erotic-frame {
-            background: rgba(255, 20, 147, 0.05);
+        .romantic-frame {
+            background: rgba(255, 20, 147, 0.08);
             backdrop-filter: blur(16px);
-            border: 1.5px solid rgba(244, 63, 94, 0.4);
-            animation: eroticGlow 3s infinite ease-in-out;
+            -webkit-backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(244, 63, 94, 0.5);
+            animation: romanticGlow 3.5s infinite ease-in-out;
         }
 
         .glow-title {
-            text-shadow: 0 0 15px rgba(244, 63, 94, 0.9), 0 0 30px rgba(225, 29, 72, 0.7);
+            text-shadow: 0 0 12px rgba(244, 63, 94, 0.9), 0 0 24px rgba(225, 29, 72, 0.7);
         }
 
         .scale-up {
@@ -45,37 +56,61 @@
             opacity: 0;
             pointer-events: none;
         }
+
+        /* Dynamic canvas container fitting all mobile/desktop viewports */
+        .canvas-container {
+            width: min(calc(100vw - 32px), calc(100dvh - 210px));
+            height: min(calc(100vw - 32px), calc(100dvh - 210px));
+            max-width: 550px;
+            max-height: 550px;
+        }
+
+        .heart-btn {
+            background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+            box-shadow: 0 4px 18px rgba(225, 29, 72, 0.5);
+        }
+        .heart-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-2 md:p-4">
+<body class="flex flex-col items-center justify-between p-3 relative select-none w-full h-full">
+
+    <!-- Romantic Ambient Background Canvas -->
+    <canvas id="bgParticleCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
 
     <!-- Header Section -->
-    <header class="w-full max-w-4xl text-center py-1">
-        <h1 class="text-xl md:text-3xl font-extrabold tracking-wider text-rose-400 glow-title flex items-center justify-center gap-2">
-            <span>💋</span> Seductive Secrets <span>💋</span>
+    <header class="w-full max-w-md text-center pt-2 z-10 flex-shrink-0 px-2">
+        <h1 class="text-2xl sm:text-4xl font-extrabold tracking-wide text-rose-300 glow-title flex items-center justify-center gap-2">
+            <span>💖</span> ভালোবাসার ছোঁয়া <span>💖</span>
         </h1>
-        <p class="text-xs md:text-sm text-rose-200/90 italic mt-0.5 min-h-[22px] flex items-center justify-center px-4 font-medium" id="quote-text">
-            "Touch gently... let the warmth melt away the secrecy."
+        <p class="text-xs sm:text-base text-rose-200/90 italic mt-1.5 font-bold px-2 leading-snug transition-all duration-300 min-h-[38px] flex items-center justify-center text-center" id="quote-text">
+            "আস্তে আস্তে ছুঁয়ে দাও... পর্দা সরতে দাও।"
         </p>
     </header>
 
-    <!-- Main Game Area -->
-    <main class="w-full flex-1 flex flex-col items-center justify-center relative my-1">
-        <div class="relative w-[94vw] h-[94vw] sm:w-[72vw] sm:h-[72vw] max-w-[620px] max-h-[620px] erotic-frame rounded-2xl p-1.5 flex items-center justify-center shadow-2xl overflow-hidden">
+    <!-- Main Scratch Card Area -->
+    <main class="w-full flex-1 flex items-center justify-center relative my-auto z-10">
+        <div class="canvas-container relative romantic-frame rounded-2xl p-2 flex items-center justify-center shadow-2xl">
             
             <div class="relative w-full h-full rounded-xl overflow-hidden bg-black shadow-inner">
                 <!-- Secret Image Layer -->
                 <canvas id="imageCanvas" class="absolute inset-0 w-full h-full object-cover"></canvas>
                 <!-- Scratchable Top Cover Layer -->
-                <canvas id="scratchCanvas" class="absolute inset-0 w-full h-full object-cover cursor-crosshair"></canvas>
-                <!-- Interactive Particles -->
-                <canvas id="particleCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+                <canvas id="scratchCanvas" class="absolute inset-0 w-full h-full object-cover cursor-pointer touch-none"></canvas>
+                <!-- Interactive Touch Particle Layer -->
+                <canvas id="particleCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
+
+                <!-- Percentage Reveal Badge -->
+                <div id="progress-badge" class="absolute top-3 right-3 bg-black/80 backdrop-blur-md border border-rose-500/50 text-rose-300 font-extrabold text-xs sm:text-sm px-3 py-1 rounded-full shadow-lg transition-all duration-300 z-30">
+                    <span id="progress-text">0%</span>
+                </div>
             </div>
 
-            <!-- Bottom Center Compact Next Desire Button -->
-            <div id="win-modal" class="scale-down absolute bottom-4 left-1/2 z-30 transition-all duration-300">
-                <button onclick="nextLevel()" class="px-6 py-3 bg-gradient-to-r from-rose-600 via-pink-600 to-red-600 text-white font-extrabold rounded-xl shadow-2xl hover:scale-105 active:scale-95 transition-all text-sm md:text-base border border-rose-300/60 glow-title whitespace-nowrap">
-                    Next Desire 💋
+            <!-- Win / Next Desire Button Modal -->
+            <div id="win-modal" class="scale-down absolute bottom-6 left-1/2 z-40 transition-all duration-300">
+                <button onclick="nextLevel()" class="heart-btn px-6 py-3 text-white font-extrabold rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all text-sm sm:text-base border border-rose-300/60 glow-title flex items-center gap-2 whitespace-nowrap">
+                    <span>পরের ছবি 💖</span>
                 </button>
             </div>
 
@@ -83,31 +118,42 @@
     </main>
 
     <!-- Controls & Level Switcher -->
-    <footer class="w-full max-w-2xl flex flex-col gap-2 py-1">
-        <div class="flex justify-center items-center gap-2">
-            <button onclick="selectLevel(0)" class="px-4 py-1.5 font-bold rounded-full bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition text-xs">Desire I</button>
-            <button onclick="selectLevel(1)" class="px-4 py-1.5 font-bold rounded-full bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition text-xs">Desire II</button>
-            <button onclick="selectLevel(2)" class="px-4 py-1.5 font-bold rounded-full bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition text-xs">Desire III</button>
-        </div>
+    <footer class="w-full max-w-md pb-3 px-2 z-10 flex-shrink-0">
+        <div class="flex items-center justify-center gap-2 w-full">
+            <button onclick="selectLevel(0)" class="level-btn flex-1 py-2.5 font-bold rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition text-xs sm:text-sm shadow-md text-center">ছবি ১</button>
+            <button onclick="selectLevel(1)" class="level-btn flex-1 py-2.5 font-bold rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition text-xs sm:text-sm shadow-md text-center">ছবি ২</button>
+            <button onclick="selectLevel(2)" class="level-btn flex-1 py-2.5 font-bold rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition text-xs sm:text-sm shadow-md text-center">ছবি ৩</button>
 
-        <div class="flex items-center justify-between px-3 text-xs text-rose-300 font-medium">
-            <span class="bg-rose-950/70 px-3 py-1 rounded-lg border border-rose-500/40">Exposed: <strong id="progress-text" class="text-rose-400 font-bold">0%</strong></span>
-            <div class="flex gap-2">
-                <button onclick="resetScratch()" class="px-3 py-1.5 bg-rose-950/70 border border-rose-500/40 rounded-lg hover:bg-rose-900 active:scale-95 transition text-xs">Cover Again 🔄</button>
-                <button onclick="autoReveal()" class="px-3.5 py-1.5 bg-gradient-to-r from-rose-600 to-pink-600 rounded-lg text-white font-bold shadow hover:opacity-95 active:scale-95 transition text-xs">Instant Reveal ✨</button>
-            </div>
+            <!-- Reset Button -->
+            <button onclick="resetScratch()" title="Reset Cover" class="p-2.5 bg-rose-950/80 border border-rose-500/50 rounded-xl hover:bg-rose-900 active:scale-95 transition text-rose-200 shadow-md flex items-center justify-center">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+                </svg>
+            </button>
+
+            <!-- Instant Reveal Button -->
+            <button onclick="autoReveal()" title="Instant Reveal" class="p-2.5 bg-gradient-to-r from-rose-600 to-pink-600 rounded-xl text-white font-bold shadow-md hover:opacity-95 active:scale-95 transition flex items-center justify-center">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                </svg>
+            </button>
         </div>
     </footer>
 
-    <!-- Game Engine Script -->
+    <!-- Interactive Engine Script -->
     <script>
         const imageCanvas = document.getElementById('imageCanvas');
         const scratchCanvas = document.getElementById('scratchCanvas');
         const particleCanvas = document.getElementById('particleCanvas');
+        const bgParticleCanvas = document.getElementById('bgParticleCanvas');
+
         const iCtx = imageCanvas.getContext('2d');
         const sCtx = scratchCanvas.getContext('2d');
         const pCtx = particleCanvas.getContext('2d');
+        const bgCtx = bgParticleCanvas.getContext('2d');
+
         const progressEl = document.getElementById('progress-text');
+        const progressBadge = document.getElementById('progress-badge');
         const winModal = document.getElementById('win-modal');
         const quoteEl = document.getElementById('quote-text');
 
@@ -115,15 +161,100 @@
         let isDrawing = false;
         let isWon = false;
         let currentPercentage = 0;
-        let sparkParticles = [];
+        let heartParticles = [];
+        let bgParticles = [];
 
+        // Levels pointing to local images in `images/` directory
         const levels = [
-            { src: 'images/puzzle1.jpg', quote: '"Touch gently... let the warmth melt away the secrecy."' },
-            { src: 'images/puzzle2.jpg', quote: '"Feel the friction as raw passion fades into view..."' },
-            { src: 'images/puzzle3.jpg', quote: '"Slow and deep... uncover every hidden fantasy."' }
+            { 
+                src: 'images/puzzle1.jpg',
+                title: 'পাপড়ি ১ - মিষ্টি শুরু',
+                desc: 'তুমি কাছে আসলে আমার হৃদস্পন্দন বেড়ে যায়... 💖'
+            },
+            { 
+                src: 'images/puzzle2.jpg',
+                title: 'পাপড়ি ২ - গভীর অনুরাগ',
+                desc: 'তোমার ওই পাগল করা হাসিতে আমি বারবার হারিয়ে যাই... 💕'
+            },
+            { 
+                src: 'images/puzzle3.jpg',
+                title: 'পাপড়ি ৩ - ভালোবাসার চরম মুহূর্ত',
+                desc: 'আমার প্রতিটা নিঃশ্বাসে শুধুই তোমার নাম... 🌹'
+            }
         ];
 
-        const img = new Image();
+        // Progressive Erotic & Teasing Double Meaning Captions in Bengali
+        function getProgressCaption(percent) {
+            if (percent <= 20) {
+                return '"আস্তে আস্তে ছুঁয়ে দাও... পর্দা সরতে দাও। ঘষে ঘষে বের করে নাও..."';
+            } else if (percent <= 40) {
+                return '"আহা, দারুণ তো! আরও জোরে জোরে ঘষো জান..."';
+            } else if (percent <= 60) {
+                return '"উফ, উত্তাপ বাড়ছে! আরেকটু ঘষলেই বের হয়ে যাবে..."';
+            } else if (percent <= 80) {
+                return '"কতটা ব্যাকুল তুমি? আর একটুখানি বাকি... থামবে না কিন্তু!"';
+            } else if (percent < 100) {
+                return '"একদম কাছে চলে এসেছো, আর এক ধাক্কায় বের করে আনো!"';
+            } else {
+                return '"সবটুকু উঁকি মারছে... এখন শুধু উপভোগ করার পালা! ❤️"';
+            }
+        }
+
+        const currentImg = new Image();
+
+        // Floating ambient hearts background
+        function initBgParticles() {
+            bgParticleCanvas.width = window.innerWidth;
+            bgParticleCanvas.height = window.innerHeight;
+            bgParticles = [];
+            const count = Math.min(Math.floor(window.innerWidth / 15), 45);
+
+            for (let i = 0; i < count; i++) {
+                bgParticles.push({
+                    x: Math.random() * bgParticleCanvas.width,
+                    y: Math.random() * bgParticleCanvas.height,
+                    size: Math.random() * 8 + 4,
+                    speedY: Math.random() * 0.7 + 0.2,
+                    speedX: (Math.random() - 0.5) * 0.4,
+                    opacity: Math.random() * 0.6 + 0.2,
+                    color: Math.random() > 0.5 ? '#f43f5e' : '#fda4af'
+                });
+            }
+        }
+
+        function drawHeartShape(ctx, x, y, size, color, opacity) {
+            ctx.save();
+            ctx.globalAlpha = opacity;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            const topCurveHeight = size * 0.3;
+            ctx.moveTo(x, y + topCurveHeight);
+            ctx.bezierCurveTo(x, y, x - size / 2, y, x - size / 2, y + topCurveHeight);
+            ctx.bezierCurveTo(x - size / 2, y + (size + topCurveHeight) / 2, x, y + size, x, y + size);
+            ctx.bezierCurveTo(x, y + size, x + size / 2, y + (size + topCurveHeight) / 2, x + size / 2, y + topCurveHeight);
+            ctx.bezierCurveTo(x + size / 2, y, x, y, x, y + topCurveHeight);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function animateBgParticles() {
+            bgCtx.clearRect(0, 0, bgParticleCanvas.width, bgParticleCanvas.height);
+            
+            bgParticles.forEach(p => {
+                p.y -= p.speedY;
+                p.x += p.speedX;
+
+                if (p.y < -20) {
+                    p.y = bgParticleCanvas.height + 20;
+                    p.x = Math.random() * bgParticleCanvas.width;
+                }
+
+                drawHeartShape(bgCtx, p.x, p.y, p.size, p.color, p.opacity);
+            });
+
+            requestAnimationFrame(animateBgParticles);
+        }
 
         function initGame() {
             imageCanvas.width = 800;
@@ -132,9 +263,17 @@
             scratchCanvas.height = 800;
             particleCanvas.width = 800;
             particleCanvas.height = 800;
+
+            initBgParticles();
             loadLevel(currentLevel);
             requestAnimationFrame(animateParticles);
+            requestAnimationFrame(animateBgParticles);
         }
+
+        window.addEventListener('resize', () => {
+            bgParticleCanvas.width = window.innerWidth;
+            bgParticleCanvas.height = window.innerHeight;
+        });
 
         function loadLevel(index) {
             currentLevel = index;
@@ -142,63 +281,108 @@
             currentPercentage = 0;
             winModal.classList.remove('scale-up');
             winModal.classList.add('scale-down');
-            quoteEl.innerText = levels[currentLevel].quote;
+            quoteEl.innerText = getProgressCaption(0);
+            
             progressEl.innerText = '0%';
+            progressBadge.className = "absolute top-3 right-3 bg-black/80 backdrop-blur-md border border-rose-500/50 text-rose-300 font-extrabold text-xs sm:text-sm px-3 py-1 rounded-full shadow-lg transition-all duration-300 z-30";
 
-            img.crossOrigin = "anonymous";
-            img.src = levels[currentLevel].src;
-            img.onload = () => drawImageAndCover();
-            img.onerror = () => createFallback();
+            // Attempt to load from images/ local folder
+            currentImg.crossOrigin = "anonymous";
+            currentImg.src = levels[currentLevel].src;
+            
+            currentImg.onload = () => {
+                iCtx.clearRect(0, 0, 800, 800);
+                iCtx.drawImage(currentImg, 0, 0, 800, 800);
+                drawCover();
+            };
+
+            // Fallback canvas drawing if local image in images/ folder is not found
+            currentImg.onerror = () => {
+                renderFallbackSecretCard();
+                drawCover();
+            };
         }
 
-        function createFallback() {
-            const temp = document.createElement('canvas');
-            temp.width = 800;
-            temp.height = 800;
-            const tCtx = temp.getContext('2d');
-            const grad = tCtx.createRadialGradient(400, 400, 50, 400, 400, 500);
-            grad.addColorStop(0, '#f43f5e');
-            grad.addColorStop(0.5, '#881337');
-            grad.addColorStop(1, '#1c020f');
-            tCtx.fillStyle = grad;
-            tCtx.fillRect(0, 0, 800, 800);
-
-            tCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-            tCtx.beginPath();
-            tCtx.arc(280, 300, 150, Math.PI, 0, false);
-            tCtx.arc(520, 300, 150, Math.PI, 0, false);
-            tCtx.lineTo(400, 650);
-            tCtx.closePath();
-            tCtx.fill();
-
-            tCtx.fillStyle = '#fff0f5';
-            tCtx.font = 'bold 42px sans-serif';
-            tCtx.textAlign = 'center';
-            tCtx.fillText(`SECRET DESIRE #${currentLevel + 1}`, 400, 420);
-
-            img.src = temp.toDataURL();
-        }
-
-        function drawImageAndCover() {
+        function renderFallbackSecretCard() {
             iCtx.clearRect(0, 0, 800, 800);
-            iCtx.drawImage(img, 0, 0, 800, 800);
+            
+            const grad = iCtx.createRadialGradient(400, 400, 80, 400, 400, 520);
+            grad.addColorStop(0, '#be123c');
+            grad.addColorStop(0.6, '#881337');
+            grad.addColorStop(1, '#3b071e');
+            iCtx.fillStyle = grad;
+            iCtx.fillRect(0, 0, 800, 800);
 
+            iCtx.strokeStyle = 'rgba(254, 205, 211, 0.35)';
+            iCtx.lineWidth = 12;
+            iCtx.strokeRect(30, 30, 740, 740);
+
+            drawHeartShape(iCtx, 400, 220, 260, 'rgba(255, 255, 255, 0.08)', 1);
+
+            iCtx.fillStyle = '#fecdd3';
+            iCtx.font = 'bold 36px sans-serif';
+            iCtx.textAlign = 'center';
+            iCtx.fillText(`✨ ${levels[currentLevel].title} ✨`, 400, 280);
+
+            drawHeartShape(iCtx, 400, 360, 90, '#f43f5e', 1);
+
+            iCtx.fillStyle = '#ffffff';
+            iCtx.font = 'bold 32px sans-serif';
+            wrapText(iCtx, levels[currentLevel].desc, 400, 540, 680, 48);
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let currentY = y;
+
+            for (let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = ctx.measureText(testLine);
+                let testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    ctx.fillText(line, x, currentY);
+                    line = words[n] + ' ';
+                    currentY += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, x, currentY);
+        }
+
+        function drawCover() {
             sCtx.globalCompositeOperation = 'source-over';
             const coverGrad = sCtx.createLinearGradient(0, 0, 800, 800);
-            coverGrad.addColorStop(0, '#58081f');
-            coverGrad.addColorStop(0.5, '#9f1239');
-            coverGrad.addColorStop(1, '#28010b');
+            coverGrad.addColorStop(0, '#881337');
+            coverGrad.addColorStop(0.5, '#e11d48');
+            coverGrad.addColorStop(1, '#4c0519');
             sCtx.fillStyle = coverGrad;
             sCtx.fillRect(0, 0, 800, 800);
 
-            sCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            sCtx.font = 'bold 34px sans-serif';
+            // Metallic/Satin texture lines
+            sCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            sCtx.lineWidth = 4;
+            for(let i = -800; i < 1600; i += 35) {
+                sCtx.beginPath();
+                sCtx.moveTo(i, 0);
+                sCtx.lineTo(i + 800, 800);
+                sCtx.stroke();
+            }
+
+            sCtx.fillStyle = '#ffe4e6';
+            sCtx.font = 'bold 38px sans-serif';
             sCtx.textAlign = 'center';
-            sCtx.fillText('💋 SCRATCH TO UNCOVER DESIRE 💋', 400, 400);
+            sCtx.fillText('💖 স্পর্শ করো ও ঘষে ঘষে বের  করো 💖', 400, 410);
+            
+            sCtx.font = '22px sans-serif';
+            sCtx.fillStyle = 'rgba(255, 228, 230, 0.85)';
+            sCtx.fillText('(Scratch to reveal secret)', 400, 455);
         }
 
         function scratch(e) {
             if (isWon) return;
+            
             const rect = scratchCanvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -211,14 +395,16 @@
             sCtx.arc(x, y, 65, 0, Math.PI * 2);
             sCtx.fill();
 
-            for (let i = 0; i < 4; i++) {
-                sparkParticles.push({
-                    x: x + (Math.random() - 0.5) * 30,
-                    y: y + (Math.random() - 0.5) * 30,
-                    size: Math.random() * 10 + 6,
-                    speedX: (Math.random() - 0.5) * 4,
-                    speedY: (Math.random() - 0.5) * 4,
-                    opacity: 1
+            // Emit romantic heart particles on touch/scratch
+            for (let i = 0; i < 3; i++) {
+                heartParticles.push({
+                    x: x + (Math.random() - 0.5) * 40,
+                    y: y + (Math.random() - 0.5) * 40,
+                    size: Math.random() * 16 + 12,
+                    speedX: (Math.random() - 0.5) * 3,
+                    speedY: -(Math.random() * 3 + 1.5),
+                    opacity: 1,
+                    color: Math.random() > 0.3 ? '#fb7185' : '#ffffff'
                 });
             }
 
@@ -227,30 +413,21 @@
 
         function animateParticles() {
             pCtx.clearRect(0, 0, 800, 800);
-            sparkParticles.forEach((p, index) => {
+
+            for (let i = heartParticles.length - 1; i >= 0; i--) {
+                const p = heartParticles[i];
                 p.x += p.speedX;
                 p.y += p.speedY;
-                p.opacity -= 0.035;
-                if (p.opacity <= 0) {
-                    sparkParticles.splice(index, 1);
-                    return;
-                }
-                pCtx.save();
-                pCtx.globalAlpha = p.opacity;
-                pCtx.fillStyle = '#fb7185';
-                
-                pCtx.beginPath();
-                const topCurveHeight = p.size * 0.3;
-                pCtx.moveTo(p.x, p.y + topCurveHeight);
-                pCtx.bezierCurveTo(p.x, p.y, p.x - p.size / 2, p.y, p.x - p.size / 2, p.y + topCurveHeight);
-                pCtx.bezierCurveTo(p.x - p.size / 2, p.y + (p.size + topCurveHeight) / 2, p.x, p.y + p.size, p.x, p.y + p.size);
-                pCtx.bezierCurveTo(p.x, p.y + p.size, p.x + p.size / 2, p.y + (p.size + topCurveHeight) / 2, p.x + p.size / 2, p.y + topCurveHeight);
-                pCtx.bezierCurveTo(p.x + p.size / 2, p.y, p.x, p.y, p.x, p.y + topCurveHeight);
-                pCtx.closePath();
-                pCtx.fill();
+                p.opacity -= 0.025;
 
-                pCtx.restore();
-            });
+                if (p.opacity <= 0) {
+                    heartParticles.splice(i, 1);
+                    continue;
+                }
+
+                drawHeartShape(pCtx, p.x, p.y, p.size, p.color, p.opacity);
+            }
+
             requestAnimationFrame(animateParticles);
         }
 
@@ -258,6 +435,7 @@
             const imageData = sCtx.getImageData(0, 0, 800, 800);
             const pixels = imageData.data;
             let transparent = 0;
+            
             for (let i = 3; i < pixels.length; i += 64) {
                 if (pixels[i] < 128) transparent++;
             }
@@ -265,10 +443,11 @@
             currentPercentage = Math.round((transparent / totalSampled) * 100);
             progressEl.innerText = currentPercentage + '%';
 
-            if (currentPercentage > 20 && currentPercentage < 50) {
-                quoteEl.innerText = '"Getting warmer... don\'t stop now..."';
-            } else if (currentPercentage >= 50 && currentPercentage < 70) {
-                quoteEl.innerText = '"So tempting... almost there..."';
+            // Dynamically update double meaning erotic caption based on reveal progress
+            quoteEl.innerText = getProgressCaption(currentPercentage);
+
+            if (currentPercentage >= 60) {
+                progressBadge.className = "absolute top-3 right-3 bg-emerald-950/90 border border-emerald-400 text-emerald-300 font-extrabold text-xs sm:text-sm px-3 py-1 rounded-full shadow-[0_0_15px_rgba(52,211,153,0.8)] animate-pulse z-30";
             }
         }
 
@@ -276,32 +455,32 @@
             if (!isDrawing) return;
             isDrawing = false;
 
-            if (currentPercentage >= 70 && !isWon) {
-                isWon = true;
-                sCtx.clearRect(0, 0, 800, 800);
-                progressEl.innerText = '100%';
-                quoteEl.innerText = '"Uncovered and completely yours..."';
-                winModal.classList.remove('scale-down');
-                winModal.classList.add('scale-up');
+            if (currentPercentage >= 60 && !isWon) {
+                autoReveal();
             }
         }
 
-        scratchCanvas.addEventListener('mousedown', () => isDrawing = true);
+        // Mouse Events
+        scratchCanvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
         scratchCanvas.addEventListener('mousemove', (e) => { if (isDrawing) scratch(e); });
         window.addEventListener('mouseup', handleRelease);
 
-        scratchCanvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); });
-        scratchCanvas.addEventListener('touchmove', (e) => { if (isDrawing) scratch(e); });
+        // Touch Events for Touchscreens/Mobile
+        scratchCanvas.addEventListener('touchstart', (e) => { 
+            isDrawing = true; 
+            scratch(e); 
+            if (e.cancelable) e.preventDefault();
+        }, { passive: false });
+
+        scratchCanvas.addEventListener('touchmove', (e) => { 
+            if (isDrawing) scratch(e); 
+            if (e.cancelable) e.preventDefault();
+        }, { passive: false });
+
         window.addEventListener('touchend', handleRelease);
 
         function resetScratch() {
-            drawImageAndCover();
-            isWon = false;
-            currentPercentage = 0;
-            winModal.classList.remove('scale-up');
-            winModal.classList.add('scale-down');
-            progressEl.innerText = '0%';
-            quoteEl.innerText = levels[currentLevel].quote;
+            loadLevel(currentLevel);
         }
 
         function autoReveal() {
@@ -309,7 +488,8 @@
             progressEl.innerText = '100%';
             currentPercentage = 100;
             isWon = true;
-            quoteEl.innerText = '"Uncovered and completely yours..."';
+            quoteEl.innerText = getProgressCaption(100);
+            progressBadge.className = "absolute top-3 right-3 bg-emerald-950/90 border border-emerald-400 text-emerald-300 font-extrabold text-xs sm:text-sm px-3 py-1 rounded-full shadow-[0_0_15px_rgba(52,211,153,0.8)] z-30";
             winModal.classList.remove('scale-down');
             winModal.classList.add('scale-up');
         }
