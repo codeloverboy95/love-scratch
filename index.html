@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seductive Secrets - Romantic Puzzle</title>
+    <title>Seductive Secrets - Pure Passion</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -13,400 +13,317 @@
         }
 
         body {
-            touch-action: manipulation;
+            touch-action: none;
             background: radial-gradient(circle at center, #2e021a 0%, #0d0007 100%);
             color: #ffe4e6;
             font-family: system-ui, -apple-system, sans-serif;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
-        /* Subtle glowing frame for the image container */
-        .glass-frame {
+        @keyframes eroticGlow {
+            0%, 100% { box-shadow: 0 0 25px rgba(225, 29, 72, 0.4), inset 0 0 15px rgba(244, 63, 94, 0.2); }
+            50% { box-shadow: 0 0 45px rgba(244, 63, 94, 0.7), inset 0 0 25px rgba(225, 29, 72, 0.4); }
+        }
+
+        .erotic-frame {
             background: rgba(255, 20, 147, 0.05);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(244, 63, 94, 0.3);
-            box-shadow: 0 0 40px rgba(225, 29, 72, 0.25);
+            backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(244, 63, 94, 0.4);
+            animation: eroticGlow 3s infinite ease-in-out;
         }
 
         .glow-title {
-            text-shadow: 0 0 15px rgba(244, 63, 94, 0.9), 0 0 30px rgba(225, 29, 72, 0.6);
+            text-shadow: 0 0 15px rgba(244, 63, 94, 0.9), 0 0 30px rgba(225, 29, 72, 0.7);
         }
 
-        /* Pulsing ring for selected tile */
-        @keyframes pulseGlow {
-            0%, 100% { ring-color: rgba(255, 182, 193, 0.9); box-shadow: 0 0 20px rgba(244, 63, 94, 0.9); }
-            50% { ring-color: rgba(255, 20, 147, 1); box-shadow: 0 0 30px rgba(255, 20, 147, 1); }
+        .scale-up {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
         }
-
-        .tile-selected {
-            z-index: 20;
-            animation: pulseGlow 1s infinite ease-in-out;
-        }
-
-        /* Background Particle Canvas */
-        #particleCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        .scale-down {
+            transform: translateX(-50%) scale(0);
+            opacity: 0;
             pointer-events: none;
-            z-index: 0;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-2 md:p-6 relative select-none">
-
-    <!-- Floating Background Particles Canvas -->
-    <canvas id="particleCanvas"></canvas>
+<body class="min-h-screen flex flex-col items-center justify-between p-2 md:p-4">
 
     <!-- Header Section -->
-    <header class="w-full max-w-4xl text-center py-2 z-10">
-        <h1 class="text-2xl md:text-4xl font-extrabold tracking-wider text-rose-400 glow-title flex items-center justify-center gap-2">
+    <header class="w-full max-w-4xl text-center py-1">
+        <h1 class="text-xl md:text-3xl font-extrabold tracking-wider text-rose-400 glow-title flex items-center justify-center gap-2">
             <span>💋</span> Seductive Secrets <span>💋</span>
         </h1>
-        <p class="text-xs md:text-base text-rose-200/90 italic mt-1 min-h-[28px] flex items-center justify-center px-4" id="quote-text">
-            "Click any two pieces to swap and reveal the passion..."
+        <p class="text-xs md:text-sm text-rose-200/90 italic mt-0.5 min-h-[22px] flex items-center justify-center px-4 font-medium" id="quote-text">
+            "Touch gently... let the warmth melt away the secrecy."
         </p>
     </header>
 
-    <!-- Main Game Area (Maximized Focus on Image) -->
-    <main class="w-full flex-1 flex flex-col items-center justify-center relative my-1 z-10">
-        <!-- Container sized for PC (up to 800px) and auto-scaled on mobile -->
-        <div class="relative w-[95vw] h-[95vw] sm:w-[80vw] sm:h-[80vw] max-w-[800px] max-h-[800px] glass-frame rounded-2xl md:rounded-3xl p-1 md:p-2 flex items-center justify-center shadow-2xl">
+    <!-- Main Game Area -->
+    <main class="w-full flex-1 flex flex-col items-center justify-center relative my-1">
+        <div class="relative w-[94vw] h-[94vw] sm:w-[72vw] sm:h-[72vw] max-w-[620px] max-h-[620px] erotic-frame rounded-2xl p-1.5 flex items-center justify-center shadow-2xl overflow-hidden">
             
-            <!-- Seamless 3x3 Grid (Micro-thin borders for maximum image visibility) -->
-            <div id="puzzleGrid" class="w-full h-full grid grid-cols-3 gap-[1px] md:gap-[2px] rounded-xl md:rounded-2xl overflow-hidden bg-rose-950/40 p-[1px]">
-                <!-- Tiles injected dynamically -->
+            <div class="relative w-full h-full rounded-xl overflow-hidden bg-black shadow-inner">
+                <!-- Secret Image Layer -->
+                <canvas id="imageCanvas" class="absolute inset-0 w-full h-full object-cover"></canvas>
+                <!-- Scratchable Top Cover Layer -->
+                <canvas id="scratchCanvas" class="absolute inset-0 w-full h-full object-cover cursor-crosshair"></canvas>
+                <!-- Interactive Particles -->
+                <canvas id="particleCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
             </div>
 
-            <!-- Victory Celebration Modal -->
-            <div id="win-modal" class="absolute inset-0 bg-black/85 backdrop-blur-md rounded-2xl md:rounded-3xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-500 z-30 p-6 text-center">
-                <div class="text-5xl md:text-7xl mb-4 animate-bounce">🔥</div>
-                <h2 class="text-2xl md:text-4xl font-extrabold text-rose-400 glow-title mb-2" id="win-title">Simply Irresistible!</h2>
-                <p class="text-sm md:text-lg text-rose-200/90 mb-6 italic max-w-md px-2" id="win-message">"You unlocked every secret desire. Are you ready for the next move?"</p>
-                <button onclick="nextLevel()" class="px-8 py-3 bg-gradient-to-r from-rose-600 via-pink-600 to-red-600 text-white text-base md:text-xl font-bold rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all">
-                    Reveal Next Desire 💋
+            <!-- Bottom Center Compact Next Desire Button -->
+            <div id="win-modal" class="scale-down absolute bottom-4 left-1/2 z-30 transition-all duration-300">
+                <button onclick="nextLevel()" class="px-6 py-3 bg-gradient-to-r from-rose-600 via-pink-600 to-red-600 text-white font-extrabold rounded-xl shadow-2xl hover:scale-105 active:scale-95 transition-all text-sm md:text-base border border-rose-300/60 glow-title whitespace-nowrap">
+                    Next Desire 💋
                 </button>
             </div>
 
         </div>
     </main>
 
-    <!-- Prominent Controls & Buttons -->
-    <footer class="w-full max-w-2xl flex flex-col gap-3 py-2 z-10">
-        <!-- Big Level Switchers -->
-        <div class="flex justify-center items-center gap-2 md:gap-4">
-            <button onclick="selectLevel(0)" class="level-btn px-4 md:px-7 py-2 md:py-3 text-xs md:text-base font-bold rounded-full bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition-all shadow-lg">Desire I</button>
-            <button onclick="selectLevel(1)" class="level-btn px-4 md:px-7 py-2 md:py-3 text-xs md:text-base font-bold rounded-full bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition-all shadow-lg">Desire II</button>
-            <button onclick="selectLevel(2)" class="level-btn px-4 md:px-7 py-2 md:py-3 text-xs md:text-base font-bold rounded-full bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition-all shadow-lg">Desire III</button>
+    <!-- Controls & Level Switcher -->
+    <footer class="w-full max-w-2xl flex flex-col gap-2 py-1">
+        <div class="flex justify-center items-center gap-2">
+            <button onclick="selectLevel(0)" class="px-4 py-1.5 font-bold rounded-full bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition text-xs">Desire I</button>
+            <button onclick="selectLevel(1)" class="px-4 py-1.5 font-bold rounded-full bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition text-xs">Desire II</button>
+            <button onclick="selectLevel(2)" class="px-4 py-1.5 font-bold rounded-full bg-rose-950/80 border border-rose-500/50 text-rose-200 active:scale-95 hover:bg-rose-900 transition text-xs">Desire III</button>
         </div>
 
-        <!-- Action Bar & Particle Toggle -->
-        <div class="flex items-center justify-between px-2 md:px-6 text-xs md:text-base text-rose-300 font-medium">
-            <span class="bg-rose-950/60 px-3 py-1.5 rounded-xl border border-rose-500/30">Swaps: <strong id="swap-count" class="text-rose-400 font-bold">0</strong></span>
-            
-            <div class="flex items-center gap-2 md:gap-3">
-                <button id="particleToggleBtn" onclick="toggleParticles()" class="px-3 md:px-5 py-2 bg-rose-950/70 border border-rose-500/40 rounded-xl hover:bg-rose-900/60 active:scale-95 transition text-xs md:text-sm">
-                    Effects: <span id="particleStatus" class="text-emerald-400 font-bold">ON</span> ✨
-                </button>
-                <button onclick="previewOriginal()" class="px-3 md:px-5 py-2 bg-rose-950/70 border border-rose-500/40 rounded-xl hover:bg-rose-900/60 active:scale-95 transition text-xs md:text-sm">Peek 👁️</button>
-                <button onclick="shuffleGrid()" class="px-4 md:px-6 py-2 bg-gradient-to-r from-rose-600 to-pink-600 rounded-xl text-white font-bold shadow-lg hover:opacity-90 active:scale-95 transition text-xs md:text-sm">Shuffle 🔥</button>
+        <div class="flex items-center justify-between px-3 text-xs text-rose-300 font-medium">
+            <span class="bg-rose-950/70 px-3 py-1 rounded-lg border border-rose-500/40">Exposed: <strong id="progress-text" class="text-rose-400 font-bold">0%</strong></span>
+            <div class="flex gap-2">
+                <button onclick="resetScratch()" class="px-3 py-1.5 bg-rose-950/70 border border-rose-500/40 rounded-lg hover:bg-rose-900 active:scale-95 transition text-xs">Cover Again 🔄</button>
+                <button onclick="autoReveal()" class="px-3.5 py-1.5 bg-gradient-to-r from-rose-600 to-pink-600 rounded-lg text-white font-bold shadow hover:opacity-95 active:scale-95 transition text-xs">Instant Reveal ✨</button>
             </div>
         </div>
     </footer>
 
-    <!-- Logic & Canvas Script -->
+    <!-- Game Engine Script -->
     <script>
-        const gridEl = document.getElementById('puzzleGrid');
-        const swapCountEl = document.getElementById('swap-count');
+        const imageCanvas = document.getElementById('imageCanvas');
+        const scratchCanvas = document.getElementById('scratchCanvas');
+        const particleCanvas = document.getElementById('particleCanvas');
+        const iCtx = imageCanvas.getContext('2d');
+        const sCtx = scratchCanvas.getContext('2d');
+        const pCtx = particleCanvas.getContext('2d');
+        const progressEl = document.getElementById('progress-text');
         const winModal = document.getElementById('win-modal');
         const quoteEl = document.getElementById('quote-text');
-        const winTitleEl = document.getElementById('win-title');
-        const winMsgEl = document.getElementById('win-message');
 
-        const gridSize = 3;
-        const totalTiles = gridSize * gridSize;
-        let tileState = [];
-        let selectedTileIndex = null;
-        let swaps = 0;
+        let currentLevel = 0;
+        let isDrawing = false;
         let isWon = false;
-        let currentLevelIndex = 0;
+        let currentPercentage = 0;
+        let sparkParticles = [];
 
         const levels = [
-            {
-                src: 'images/puzzle1.jpg',
-                quote: '"Click any two pieces to swap... undress the mystery slow and deep."',
-                winTitle: 'Sensual & Tempting! 🔥',
-                winMsg: '"You have a touch that makes heartbeats race..."'
-            },
-            {
-                src: 'images/puzzle2.jpg',
-                quote: '"Whisper your fantasies into the dark and reveal what lies beneath..."',
-                winTitle: 'Passionate Fire! 💋',
-                winMsg: '"Every move you make gets hotter and more intense..."'
-            },
-            {
-                src: 'images/puzzle3.jpg',
-                quote: '"Slow hands, deep eyes... match the pieces to claim your sweet reward."',
-                winTitle: 'Pure Ecstasy! ✨',
-                winMsg: '"You conquered my deepest secret desire..."'
-            }
+            { src: 'images/puzzle1.jpg', quote: '"Touch gently... let the warmth melt away the secrecy."' },
+            { src: 'images/puzzle2.jpg', quote: '"Feel the friction as raw passion fades into view..."' },
+            { src: 'images/puzzle3.jpg', quote: '"Slow and deep... uncover every hidden fantasy."' }
         ];
 
-        let loadedImageCanvas = null;
+        const img = new Image();
 
-        function loadLevel(index) {
-            currentLevelIndex = index;
-            isWon = false;
-            swaps = 0;
-            selectedTileIndex = null;
-            swapCountEl.innerText = swaps;
-            winModal.classList.add('opacity-0', 'pointer-events-none');
-            quoteEl.innerText = levels[currentLevelIndex].quote;
-
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.src = levels[currentLevelIndex].src;
-
-            img.onload = () => {
-                prepareImageCanvas(img);
-                initAndShuffle();
-            };
-
-            img.onerror = () => {
-                // Procedural romantic style fallback image
-                const fallbackCanvas = document.createElement('canvas');
-                fallbackCanvas.width = 900;
-                fallbackCanvas.height = 900;
-                const fCtx = fallbackCanvas.getContext('2d');
-
-                const grad = fCtx.createRadialGradient(450, 450, 60, 450, 450, 500);
-                grad.addColorStop(0, '#f43f5e');
-                grad.addColorStop(0.5, '#881337');
-                grad.addColorStop(1, '#1c020f');
-                fCtx.fillStyle = grad;
-                fCtx.fillRect(0, 0, 900, 900);
-
-                // Romantic Silhouette Art
-                fCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-                fCtx.beginPath();
-                fCtx.arc(300, 330, 160, Math.PI, 0, false);
-                fCtx.arc(600, 330, 160, Math.PI, 0, false);
-                fCtx.lineTo(450, 720);
-                fCtx.closePath();
-                fCtx.fill();
-
-                fCtx.fillStyle = '#fff0f5';
-                fCtx.font = 'bold 42px sans-serif';
-                fCtx.textAlign = 'center';
-                fCtx.fillText(`SECRET DESIRE #${currentLevelIndex + 1}`, 450, 460);
-
-                const fallbackImg = new Image();
-                fallbackImg.src = fallbackCanvas.toDataURL();
-                fallbackImg.onload = () => {
-                    prepareImageCanvas(fallbackImg);
-                    initAndShuffle();
-                };
-            };
-        }
-
-        function prepareImageCanvas(image) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 900;
-            canvas.height = 900;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(image, 0, 0, 900, 900);
-            loadedImageCanvas = canvas;
-        }
-
-        function initAndShuffle() {
-            tileState = Array.from({ length: totalTiles }, (_, i) => i);
-            
-            for (let i = tileState.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [tileState[i], tileState[j]] = [tileState[j], tileState[i]];
-            }
-
-            renderGrid();
-        }
-
-        function shuffleGrid() {
-            if (isWon) return;
-            initAndShuffle();
-            swaps = 0;
-            swapCountEl.innerText = swaps;
-            selectedTileIndex = null;
-        }
-
-        function renderGrid() {
-            gridEl.innerHTML = '';
-            const pieceSize = 300; // 900 / 3
-
-            tileState.forEach((originalIndex, currentPos) => {
-                const tileDiv = document.createElement('div');
-                tileDiv.className = `relative w-full h-full rounded-md md:rounded-lg overflow-hidden cursor-pointer transition-transform duration-150 active:scale-95 ${
-                    selectedTileIndex === currentPos ? 'tile-selected ring-4 ring-pink-400' : ''
-                }`;
-
-                const origRow = Math.floor(originalIndex / gridSize);
-                const origCol = originalIndex % gridSize;
-
-                const tileCanvas = document.createElement('canvas');
-                tileCanvas.width = pieceSize;
-                tileCanvas.height = pieceSize;
-                tileCanvas.className = "w-full h-full object-cover pointer-events-none";
-
-                const ctx = tileCanvas.getContext('2d');
-                if (loadedImageCanvas) {
-                    ctx.drawImage(
-                        loadedImageCanvas,
-                        origCol * pieceSize, origRow * pieceSize, pieceSize, pieceSize,
-                        0, 0, pieceSize, pieceSize
-                    );
-                }
-
-                tileDiv.appendChild(tileCanvas);
-                tileDiv.onclick = () => onTileClick(currentPos);
-                gridEl.appendChild(tileDiv);
-            });
-        }
-
-        function onTileClick(clickedPos) {
-            if (isWon) return;
-
-            if (selectedTileIndex === null) {
-                selectedTileIndex = clickedPos;
-                renderGrid();
-            } else if (selectedTileIndex === clickedPos) {
-                selectedTileIndex = null;
-                renderGrid();
-            } else {
-                [tileState[selectedTileIndex], tileState[clickedPos]] = [tileState[clickedPos], tileState[selectedTileIndex]];
-                selectedTileIndex = null;
-                swaps++;
-                swapCountEl.innerText = swaps;
-                renderGrid();
-                checkWin();
-            }
-        }
-
-        function checkWin() {
-            const isCorrect = tileState.every((val, index) => val === index);
-            if (isCorrect) {
-                isWon = true;
-                winTitleEl.innerText = levels[currentLevelIndex].winTitle;
-                winMsgEl.innerText = levels[currentLevelIndex].winMsg;
-                setTimeout(() => {
-                    winModal.classList.remove('opacity-0', 'pointer-events-none');
-                }, 200);
-            }
-        }
-
-        function previewOriginal() {
-            if (isWon) return;
-            const originalState = Array.from({ length: totalTiles }, (_, i) => i);
-            const tempState = [...tileState];
-            tileState = originalState;
-            renderGrid();
-
-            setTimeout(() => {
-                tileState = tempState;
-                renderGrid();
-            }, 1200);
-        }
-
-        function selectLevel(index) {
-            loadLevel(index);
-        }
-
-        function nextLevel() {
-            const nextIdx = (currentLevelIndex + 1) % levels.length;
-            loadLevel(nextIdx);
-        }
-
-        /* ----------------------------------------------------
-           Floating Heart Background Particle Animation Engine
-        ---------------------------------------------------- */
-        const pCanvas = document.getElementById('particleCanvas');
-        const pCtx = pCanvas.getContext('2d');
-        let particles = [];
-        let particlesEnabled = true;
-
-        function resizeParticleCanvas() {
-            pCanvas.width = window.innerWidth;
-            pCanvas.height = window.innerHeight;
-        }
-
-        class HeartParticle {
-            constructor() {
-                this.reset();
-            }
-
-            reset() {
-                this.x = Math.random() * pCanvas.width;
-                this.y = pCanvas.height + Math.random() * 20;
-                this.size = Math.random() * 12 + 8;
-                this.speedY = Math.random() * 1.2 + 0.5;
-                this.speedX = Math.sin(Math.random() * Math.PI) * 0.5;
-                this.opacity = Math.random() * 0.5 + 0.2;
-            }
-
-            update() {
-                this.y -= this.speedY;
-                this.x += this.speedX;
-                if (this.y < -30) this.reset();
-            }
-
-            draw() {
-                pCtx.save();
-                pCtx.globalAlpha = this.opacity;
-                pCtx.fillStyle = '#f43f5e';
-                pCtx.beginPath();
-                const topCurveHeight = this.size * 0.3;
-                pCtx.moveTo(this.x, this.y + topCurveHeight);
-                pCtx.bezierCurveTo(this.x, this.y, this.x - this.size / 2, this.y, this.x - this.size / 2, this.y + topCurveHeight);
-                pCtx.bezierCurveTo(this.x - this.size / 2, this.y + (this.size + topCurveHeight) / 2, this.x, this.y + this.size, this.x, this.y + this.size);
-                pCtx.bezierCurveTo(this.x, this.y + this.size, this.x + this.size / 2, this.y + (this.size + topCurveHeight) / 2, this.x + this.size / 2, this.y + topCurveHeight);
-                pCtx.bezierCurveTo(this.x + this.size / 2, this.y, this.x, this.y, this.x, this.y + topCurveHeight);
-                pCtx.closePath();
-                pCtx.fill();
-                pCtx.restore();
-            }
-        }
-
-        function initParticles() {
-            resizeParticleCanvas();
-            particles = Array.from({ length: 25 }, () => new HeartParticle());
-            animateParticles();
-        }
-
-        function animateParticles() {
-            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
-            if (particlesEnabled) {
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
-            }
+        function initGame() {
+            imageCanvas.width = 800;
+            imageCanvas.height = 800;
+            scratchCanvas.width = 800;
+            scratchCanvas.height = 800;
+            particleCanvas.width = 800;
+            particleCanvas.height = 800;
+            loadLevel(currentLevel);
             requestAnimationFrame(animateParticles);
         }
 
-        function toggleParticles() {
-            particlesEnabled = !particlesEnabled;
-            const statusEl = document.getElementById('particleStatus');
-            statusEl.innerText = particlesEnabled ? 'ON' : 'OFF';
-            statusEl.className = particlesEnabled ? 'text-emerald-400 font-bold' : 'text-rose-500 font-bold';
+        function loadLevel(index) {
+            currentLevel = index;
+            isWon = false;
+            currentPercentage = 0;
+            winModal.classList.remove('scale-up');
+            winModal.classList.add('scale-down');
+            quoteEl.innerText = levels[currentLevel].quote;
+            progressEl.innerText = '0%';
+
+            img.crossOrigin = "anonymous";
+            img.src = levels[currentLevel].src;
+            img.onload = () => drawImageAndCover();
+            img.onerror = () => createFallback();
         }
 
-        window.addEventListener('resize', () => {
-            resizeParticleCanvas();
-        });
+        function createFallback() {
+            const temp = document.createElement('canvas');
+            temp.width = 800;
+            temp.height = 800;
+            const tCtx = temp.getContext('2d');
+            const grad = tCtx.createRadialGradient(400, 400, 50, 400, 400, 500);
+            grad.addColorStop(0, '#f43f5e');
+            grad.addColorStop(0.5, '#881337');
+            grad.addColorStop(1, '#1c020f');
+            tCtx.fillStyle = grad;
+            tCtx.fillRect(0, 0, 800, 800);
 
-        window.onload = () => {
-            initParticles();
-            loadLevel(0);
-        };
+            tCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            tCtx.beginPath();
+            tCtx.arc(280, 300, 150, Math.PI, 0, false);
+            tCtx.arc(520, 300, 150, Math.PI, 0, false);
+            tCtx.lineTo(400, 650);
+            tCtx.closePath();
+            tCtx.fill();
+
+            tCtx.fillStyle = '#fff0f5';
+            tCtx.font = 'bold 42px sans-serif';
+            tCtx.textAlign = 'center';
+            tCtx.fillText(`SECRET DESIRE #${currentLevel + 1}`, 400, 420);
+
+            img.src = temp.toDataURL();
+        }
+
+        function drawImageAndCover() {
+            iCtx.clearRect(0, 0, 800, 800);
+            iCtx.drawImage(img, 0, 0, 800, 800);
+
+            sCtx.globalCompositeOperation = 'source-over';
+            const coverGrad = sCtx.createLinearGradient(0, 0, 800, 800);
+            coverGrad.addColorStop(0, '#58081f');
+            coverGrad.addColorStop(0.5, '#9f1239');
+            coverGrad.addColorStop(1, '#28010b');
+            sCtx.fillStyle = coverGrad;
+            sCtx.fillRect(0, 0, 800, 800);
+
+            sCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            sCtx.font = 'bold 34px sans-serif';
+            sCtx.textAlign = 'center';
+            sCtx.fillText('💋 SCRATCH TO UNCOVER DESIRE 💋', 400, 400);
+        }
+
+        function scratch(e) {
+            if (isWon) return;
+            const rect = scratchCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            const x = (clientX - rect.left) * (scratchCanvas.width / rect.width);
+            const y = (clientY - rect.top) * (scratchCanvas.height / rect.height);
+
+            sCtx.globalCompositeOperation = 'destination-out';
+            sCtx.beginPath();
+            sCtx.arc(x, y, 65, 0, Math.PI * 2);
+            sCtx.fill();
+
+            for (let i = 0; i < 4; i++) {
+                sparkParticles.push({
+                    x: x + (Math.random() - 0.5) * 30,
+                    y: y + (Math.random() - 0.5) * 30,
+                    size: Math.random() * 10 + 6,
+                    speedX: (Math.random() - 0.5) * 4,
+                    speedY: (Math.random() - 0.5) * 4,
+                    opacity: 1
+                });
+            }
+
+            calculateProgress();
+        }
+
+        function animateParticles() {
+            pCtx.clearRect(0, 0, 800, 800);
+            sparkParticles.forEach((p, index) => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.opacity -= 0.035;
+                if (p.opacity <= 0) {
+                    sparkParticles.splice(index, 1);
+                    return;
+                }
+                pCtx.save();
+                pCtx.globalAlpha = p.opacity;
+                pCtx.fillStyle = '#fb7185';
+                
+                pCtx.beginPath();
+                const topCurveHeight = p.size * 0.3;
+                pCtx.moveTo(p.x, p.y + topCurveHeight);
+                pCtx.bezierCurveTo(p.x, p.y, p.x - p.size / 2, p.y, p.x - p.size / 2, p.y + topCurveHeight);
+                pCtx.bezierCurveTo(p.x - p.size / 2, p.y + (p.size + topCurveHeight) / 2, p.x, p.y + p.size, p.x, p.y + p.size);
+                pCtx.bezierCurveTo(p.x, p.y + p.size, p.x + p.size / 2, p.y + (p.size + topCurveHeight) / 2, p.x + p.size / 2, p.y + topCurveHeight);
+                pCtx.bezierCurveTo(p.x + p.size / 2, p.y, p.x, p.y, p.x, p.y + topCurveHeight);
+                pCtx.closePath();
+                pCtx.fill();
+
+                pCtx.restore();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        function calculateProgress() {
+            const imageData = sCtx.getImageData(0, 0, 800, 800);
+            const pixels = imageData.data;
+            let transparent = 0;
+            for (let i = 3; i < pixels.length; i += 64) {
+                if (pixels[i] < 128) transparent++;
+            }
+            const totalSampled = pixels.length / 64;
+            currentPercentage = Math.round((transparent / totalSampled) * 100);
+            progressEl.innerText = currentPercentage + '%';
+
+            if (currentPercentage > 20 && currentPercentage < 50) {
+                quoteEl.innerText = '"Getting warmer... don\'t stop now..."';
+            } else if (currentPercentage >= 50 && currentPercentage < 70) {
+                quoteEl.innerText = '"So tempting... almost there..."';
+            }
+        }
+
+        function handleRelease() {
+            if (!isDrawing) return;
+            isDrawing = false;
+
+            if (currentPercentage >= 70 && !isWon) {
+                isWon = true;
+                sCtx.clearRect(0, 0, 800, 800);
+                progressEl.innerText = '100%';
+                quoteEl.innerText = '"Uncovered and completely yours..."';
+                winModal.classList.remove('scale-down');
+                winModal.classList.add('scale-up');
+            }
+        }
+
+        scratchCanvas.addEventListener('mousedown', () => isDrawing = true);
+        scratchCanvas.addEventListener('mousemove', (e) => { if (isDrawing) scratch(e); });
+        window.addEventListener('mouseup', handleRelease);
+
+        scratchCanvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); });
+        scratchCanvas.addEventListener('touchmove', (e) => { if (isDrawing) scratch(e); });
+        window.addEventListener('touchend', handleRelease);
+
+        function resetScratch() {
+            drawImageAndCover();
+            isWon = false;
+            currentPercentage = 0;
+            winModal.classList.remove('scale-up');
+            winModal.classList.add('scale-down');
+            progressEl.innerText = '0%';
+            quoteEl.innerText = levels[currentLevel].quote;
+        }
+
+        function autoReveal() {
+            sCtx.clearRect(0, 0, 800, 800);
+            progressEl.innerText = '100%';
+            currentPercentage = 100;
+            isWon = true;
+            quoteEl.innerText = '"Uncovered and completely yours..."';
+            winModal.classList.remove('scale-down');
+            winModal.classList.add('scale-up');
+        }
+
+        function selectLevel(idx) {
+            loadLevel(idx);
+        }
+
+        function nextLevel() {
+            currentLevel = (currentLevel + 1) % levels.length;
+            loadLevel(currentLevel);
+        }
+
+        window.onload = initGame;
     </script>
 </body>
 </html>
